@@ -93,7 +93,8 @@ Replace the IP with the real IP from previous `docker inspect` command.
 ```
 
 
-7) If you have MySQL client, you can try to connect to `docker-mariadb-node2` host and see if you are able to connect as "keycloak" user and see "keycloak" database.
+7) If you have MySQL client, you can check if state transfer from `mariadb-node1` to `mariadb-node2` happened correctly. 
+Try to connect to `docker-mariadb-node2` host and see if you are able to connect as "keycloak" user and see "keycloak" database.
 
 ```
 mysql -h docker-mariadb-node2 -u keycloak -pkeycloak --execute="show databases";

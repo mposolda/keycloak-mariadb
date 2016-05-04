@@ -1,6 +1,5 @@
 FROM mariadb:10.1
 
-RUN mkdir /keycloak-work
 ADD docker-entrypoint-replaced.sh /docker-entrypoint-replaced.sh
 ADD docker-entrypoint-slave.sh /docker-entrypoint-slave.sh
 
