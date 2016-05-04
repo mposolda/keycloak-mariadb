@@ -153,3 +153,15 @@ Asumption is that node1 is running on virtual host `node1` and node2 is running 
 5) Login into keycloak admin console on node1 (create user `admin` with password `admin` before) and check in `Server Info` 
 in `providers` that connectionsJpa provider uses `docker-mariadb-node1` on `node1` and `docker-mariadb-node2` on `node2`. 
 
+## Run test
+
+Assumes that 2 keycloak cluster nodes are up and running on `http://node1:8080/auth` and `http://node2:8080/auth` and user `admin` 
+with password `admin` available on master realm, you can run the test, which creates user on node1 and checks that it's immediatelly visible on node2 etc.
+
+1) You may need to first build Keycloak from sources (`mvn clean install -DskipTests=true` is sufficient) and then update version in `keycloak-mariadb/mariadb-cluster-test/pom.xml`.
+
+2) Then run the test like this:
+```
+cd keycloak-mariadb/mariadb-cluster-test
+mvn clean install
+```
