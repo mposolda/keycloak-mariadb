@@ -114,5 +114,42 @@ The output should be like:
 
 ## Configure Keycloak cluster
 
-So at this moment, we have 2 MariaDB galera cluster nodes on "docker-mariadb-node1" and "docker-mariadb-node2" . Next step is to 
- configure 2 Keycloak nodes when node1 will use "docker-mariadb-node1" and node2 will use "docker-mariadb-node2". 
+So at this moment, we have 2 MariaDB galera cluster nodes on `docker-mariadb-node1` and `docker-mariadb-node2` . Next step is to 
+configure 2 Keycloak nodes when node1 will use `docker-mariadb-node1` and node2 will use `docker-mariadb-node2`.
+  
+1) Unzip Keycloak server-distribution into directory `keycloak-node1` and configure MariaDB JDBC driver version 1.3.7 as a module into module `org.mariadb` . 
+See Wildfly docs for more details.
+   
+2) Configure in `keycloak-node1/standalone/configuration/standalone-ha.xml` the datasource MariaDB module into `drivers` tag like this:
+
+```
+<driver name="mariadb" module="org.mariadb">
+    <xa-datasource-class>org.mariadb.jdbc.Driver</xa-datasource-class>
+</driver>
+```
+
+and configure the datasource under `datasources` tag like this:
+
+```
+<datasource jndi-name="java:jboss/datasources/KeycloakDS"
+            pool-name="KeycloakDS"
+            enabled="true"
+            use-java-context="true">
+    <connection-url>jdbc:mariadb://docker-mariadb-node1/keycloak</connection-url>
+    <driver>mariadb</driver>
+    <security>
+      <user-name>keycloak</user-name>
+      <password>keycloak</password>
+    </security>
+</datasource>
+```
+
+3) Unzip another node into directory `keycloak-node2` and configure again JDBC driver and standalone-ha.xml. But use `docker-mariadb-node2` inside connection-url (That would be 
+the only difference against `keycloak-node1`. 
+
+4) Follow other steps in Keycloak clustering documentation to ensure that keycloak-node1 and keycloak-node2 will be in cluster. Then start both nodes. 
+Asumption is that node1 is running on virtual host `node1` and node2 is running on virtual host `node2`.
+
+5) Login into keycloak admin console on node1 (create user `admin` with password `admin` before) and check in `Server Info` 
+in `providers` that connectionsJpa provider uses `docker-mariadb-node1` on `node1` and `docker-mariadb-node2` on `node2`. 
+
