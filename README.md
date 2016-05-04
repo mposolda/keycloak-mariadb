@@ -1,20 +1,34 @@
 # keycloak-mariadb
-How to easily set MariaDB cluster and configure with Keycloak
 
-1) Build image (non-mandatory):
+In the example, we will start 2 MariaDB cluster nodes communicating with each other. Each node will run in separate docker container.
+
+Then we will setup Keycloak cluster with 2 nodes, when Keycloak `node1` will use database on `mariadb-node1` and Keycloak `node2` will use database
+on `mariadb-node2`. Change anything in admin console if Keycloak `node1`, you will be immediatelly able to see the changes on keycloak `node2` too, because
+MariaDB databases are in cluster and use synchronous replication. 
+
+## Building docker image
+ 
+This is optional step, because there is already existing docker image `mposolda/mariadb-cluster`, so you can just pull this image instead of
+building your own. So if you really follow this step and build the image by yourself, then replace all future occurences in next steps and use your
+image `mariadb-cluster-image` instead of `mposolda/mariadb-cluster` image.
+
+So building image is with these command:
 
 ```
 cd keycloak-mariadb/dockerimage
-docker build -t mariadb-cluster .
+docker build -t mariadb-cluster-image .
 ```
 
-(Or use the image mposolda/mariadb-cluster:10.1 )
+## Setup 2 nodes in MariaDB cluster
+
+1) Install docker of version 1.10 or later (because of `docker network` command to be available). Follow documentation of your OS on how to do it.
 
 
-2) 
+2) Create separate docker bridge network to ensure that nodes see each other through embedded DNS provided by docker.
 
+```
 docker network create --driver bridge mariadb_cluster
-
+```
 
 3) 
 ```
